@@ -1,0 +1,88 @@
+# Production stack for EC2: nginx (TLS) in front of the Next.js frontend and
+# FastAPI backend, with automatic Let's Encrypt certificate renewal.
+#
+# Only nginx publishes ports (80/443). db / backend / frontend are reachable
+# only on the internal docker network.
+#
+# Bring up with:
+#   ./init-letsencrypt.sh                              # one-time: get certs
+#   docker compose -f docker-compose.prod.yml up -d --build
+services:
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - DB_HOST=db
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - AI_PROVIDER=${AI_PROVIDER}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL=gemini-2.5-flash-lite
+      - ALLOW_DEV_PRO_ACCESS=${ALLOW_DEV_PRO_ACCESS}
+      - UNLIMITED_UPLOAD_EMAILS=${UNLIMITED_UPLOAD_EMAILS}
+      - DEEPGRAM_API_KEY=${DEEPGRAM_API_KEY}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_EMAIL=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASS}
+      - FRONTEND_URL=${FRONTEND_URL}
+    volumes:
+      - ./backend/storage:/app/storage
+      - ./backend/outputs:/app/outputs
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      # Empty → the browser uses relative URLs (https://lenseiq.app/api/...),
+      # which nginx routes to the backend. No hardcoded host needed.
+      - NEXT_PUBLIC_API_URL=
+      - BACKEND_URL=http://backend:8001
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    # Reload every 6h to pick up renewed certs.
+    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
+    depends_on:
+      - frontend
+      - backend
+    restart: unless-stopped
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    # Attempt renewal every 12h.
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+volumes:
+  postgres_data:
