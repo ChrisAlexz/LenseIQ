@@ -1,0 +1,129 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install FFmpeg
+        uses: AnimMouse/setup-ffmpeg@v1
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Check imports
+        run: |
+          cd backend
+          python -c "from audio.extract_audio import extract_audio; print('extract_audio OK')"
+          python -c "from acoustic.spike_detection import detect_spikes; print('spike_detection OK')"
+          python -c "from linguistic.keyword_detection import run_linguistic; print('keyword_detection OK')"
+          python -c "from caption.generate_caption import generate_captions; print('generate_captions OK')"
+          python -c "from caption.burn_captions import burn_captions; print('burn_captions OK')"
+
+  frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Check build
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+        run: |
+          cd frontend
+          npm run build
+
+        
+  docker:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]  
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push backend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/autoreel-backend-image:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/autoreel-backend-image:${{ github.sha }}
+
+      - name: Build and push frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/autoreel-frontend-image:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/autoreel-frontend-image:${{ github.sha }}
+  deploy:
+    runs-on: ubuntu-latest
+    needs: docker   # waits for backend + frontend + docker jobs
+
+    # Only deploy when pushing to main (NOT on PR)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd autoreel
+            git pull origin main
+
+            echo "Stopping Containers..."
+            docker-compose down
+            
+            echo "Pulling latest images..."
+            docker-compose pull
+
+            echo "Restarting containers..."
+            docker-compose up -d --force-recreate 
+
+            echo "Cleaning unused images..."
+            docker image prune -af
+
+     
+

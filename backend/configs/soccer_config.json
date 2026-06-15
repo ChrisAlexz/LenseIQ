@@ -1,0 +1,19 @@
+  {
+  "goal": 10,
+  "scores": 8,
+  "shoots": 6,
+  "penalty": 6,
+  "free kick": 4,
+  "save": 4,
+  "misses": 3, 
+  "assist": 3, 
+  "yellow card": 2,
+  "injury": 2, 
+  "header": 2,
+  "cross": 2, 
+  "red card": 3,
+  "offside": 1,
+  "corner": 1,
+  "foul": 1,
+  "substitution": 1
+}

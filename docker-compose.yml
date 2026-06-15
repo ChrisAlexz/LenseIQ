@@ -1,0 +1,65 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    #image: aashreeya/autoreel-backend-image:latest
+
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - DB_HOST=db
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - AI_PROVIDER=${AI_PROVIDER}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_MODEL=gemini-2.5-flash-lite
+      - ALLOW_DEV_PRO_ACCESS=${ALLOW_DEV_PRO_ACCESS}
+      - UNLIMITED_UPLOAD_EMAILS=${UNLIMITED_UPLOAD_EMAILS}
+      - DEEPGRAM_API_KEY=${DEEPGRAM_API_KEY}
+
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_EMAIL=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASS}
+      - FRONTEND_URL=${FRONTEND_URL}
+    volumes:
+      - ./backend/storage:/app/storage
+      - ./backend/outputs:/app/outputs
+      - whisper_cache:/root/.cache/whisper
+    ports:
+      - "8001:8001"
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    #image: aashreeya/autoreel-frontend-image:latest
+
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - BACKEND_URL=${BACKEND_URL}
+    ports:
+      - "3001:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  whisper_cache:
+  postgres_data:

@@ -1,0 +1,21 @@
+{
+  "dunk": 10,
+  "buzzer beater": 10,
+  "three pointer": 8,
+  "three": 7,
+  "block": 6,
+  "steal": 6,
+  "alley oop": 6,
+  "fight": 5,
+  "triple double": 5,
+  "layup": 4,
+  "two": 4,
+  "fast break": 4,
+  "free throw": 3,
+  "assist": 3,
+  "rebound": 3,
+  "foul": 2,
+  "technical foul": 3,
+  "timeout": 1,
+  "substitution": 1
+}

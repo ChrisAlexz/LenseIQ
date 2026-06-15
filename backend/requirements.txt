@@ -1,0 +1,15 @@
+fastapi==0.135.1
+faster-whisper==1.1.1
+librosa==0.11.0
+python-dotenv==1.2.2
+PyJWT==2.12.1
+uvicorn==0.42.0
+pydantic==2.12.5
+python-multipart==0.0.22
+bcrypt==5.0.0
+passlib[bcrypt]
+psycopg2-binary==2.9.11
+soundfile==0.13.1
+scipy==1.17.1
+numpy==2.4.3
+Pillow==11.2.1

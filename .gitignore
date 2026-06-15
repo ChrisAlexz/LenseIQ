@@ -1,0 +1,64 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+
+# Media files
+*.mp4
+*.mov
+*.mkv
+*.wav
+*.mp3
+*.webm
+
+# Local test videos
+backend/test_videos/
+
+# Allow checked-in demo clips used by the frontend
+!frontend/public/uiclips/doku.mp4
+!frontend/public/uiclips/goal.mp4
+!frontend/public/uiclips/lamelo.mp4
+
+# Subtitles
+*.srt
+*.ass
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Environment
+.env
+.env.local
+.env.*
+!.env.local.example
+
+# Outputs (generated pipeline data)
+outputs/
+backend/outputs/
+
+# Uploaded video storage
+backend/storage/videos/
+backend/storage/clips/
+
+# Misc
+spikes.json
+*.log
+venv_new/
+
+# Compiled Go transcriber binary (built in Docker / locally)
+backend/bin/

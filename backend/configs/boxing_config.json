@@ -1,0 +1,21 @@
+{
+  "knockout": 10,
+  "knockdown": 9,
+  "heavy punch": 7,
+  "uppercut": 6,
+  "hook": 6,
+  "scorecard": 6, 
+  "combo": 5,
+  "down": 5, 
+  "counter": 4,
+  "count": 3,
+  "body shot": 3,
+  "point": 3,
+  "straight": 2,
+  "jab": 2,
+  "defense": 2,
+  "referee": 2,
+  "clinch": 1,
+  "round": 1,
+  "corner": 1
+}

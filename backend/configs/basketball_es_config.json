@@ -1,0 +1,22 @@
+{
+  "mate": 10,
+  "volcada": 10,
+  "tapón": 6,
+  "robo": 6,
+  "triple": 8,
+  "alley oop": 6,
+  "doble doble": 5,
+  "triple doble": 5,
+  "contraataque": 4,
+  "bandeja": 4,
+  "tiro libre": 3,
+  "asistencia": 3,
+  "rebote": 3,
+  "falta": 2,
+  "falta técnica": 3,
+  "tiempo muerto": 1,
+  "cambio": 1,
+  "pelea": 5,
+  "canasta": 7,
+  "encesta": 7
+}

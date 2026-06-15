@@ -1,0 +1,20 @@
+{
+  "touchdown": 10,
+  "interception": 8,
+  "sack": 7,
+  "field goal": 6,
+  "fumble": 6,
+  "kickoff return": 6,
+  "punt return": 6,
+  "pass": 4,
+  "all the way": 4,
+  "fight": 4,
+  "rush": 4,
+  "first down": 3,
+  "last down": 3,
+  "tackle": 3,
+  "penalty": 2,
+  "timeout": 1,
+  "substitution": 1,
+  "challenge": 2
+}

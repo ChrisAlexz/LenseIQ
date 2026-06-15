@@ -1,0 +1,16 @@
+{
+  "ace": 10,
+  "match point": 10,
+  "set point": 8,
+  "break point": 8,
+  "winner": 7,
+  "volley": 5,
+  "rally": 4,
+  "backhand": 3,
+  "forehand": 3,
+  "serve": 2,
+  "double fault": 3,
+  "fault": 2,
+  "challenge": 2,
+  "let": 1
+}

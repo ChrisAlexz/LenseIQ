@@ -1,0 +1,22 @@
+{
+  "as": 8,
+  "ace": 8,
+  "winner": 7,
+  "break": 6,
+  "match point": 10,
+  "set point": 8,
+  "doble falta": 5,
+  "punto de partido": 10,
+  "punto de set": 8,
+  "red": 3,
+  "fuera": 3,
+  "falta": 3,
+  "juego": 2,
+  "set": 2,
+  "partido": 2,
+  "saque": 4,
+  "deuce": 4,
+  "iguales": 4,
+  "ventaja": 3,
+  "raquetazo": 5
+}
