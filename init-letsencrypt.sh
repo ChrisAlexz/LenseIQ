@@ -2,7 +2,7 @@
 # One-time Let's Encrypt bootstrap for the production nginx stack.
 #
 # Run this ONCE on the EC2 host, AFTER:
-#   - DNS for lenseiq.app + www.lenseiq.app points at this server, and
+#   - DNS for lenseiq.vip + www.lenseiq.vip points at this server, and
 #   - your .env exists.
 #
 # It creates a temporary self-signed cert so nginx can start, then swaps it
@@ -10,7 +10,7 @@
 # certbot container in docker-compose.prod.yml auto-renews.
 set -e
 
-domains=(lenseiq.app www.lenseiq.app)
+domains=(lenseiq.vip www.lenseiq.vip)
 email="lenseiqsupport@gmail.com"   # used by Let's Encrypt for renewal/security notices
 staging=0                          # set to 1 to test without hitting LE rate limits
 

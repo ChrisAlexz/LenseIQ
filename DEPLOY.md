@@ -1,4 +1,4 @@
-# Deploying LenseIQ to EC2 (lenseiq.app, HTTPS)
+# Deploying LenseIQ to EC2 (lenseiq.vip, HTTPS)
 
 Production runs the whole stack with Docker Compose behind an nginx reverse
 proxy that terminates TLS (Let's Encrypt). Everything below happens on a fresh
@@ -31,7 +31,7 @@ Allocate an **Elastic IP** and associate it so the IP doesn't change on reboot.
 
 ## 2. Point the domain at the server (IONOS DNS)
 
-In the IONOS control panel → **Domains → lenseiq.app → DNS**, add:
+In the IONOS control panel → **Domains → lenseiq.vip → DNS**, add:
 
 | Type | Host name | Value |
 | --- | --- | --- |
@@ -41,7 +41,7 @@ In the IONOS control panel → **Domains → lenseiq.app → DNS**, add:
 DNS can take a few minutes to a couple of hours. Verify before continuing:
 
 ```bash
-dig +short lenseiq.app      # should print your EC2 IP
+dig +short lenseiq.vip      # should print your EC2 IP
 ```
 
 > The Let's Encrypt step **will fail** until the domain resolves to the server,
@@ -85,7 +85,7 @@ nano .env        # fill in the REPLACE_WITH_* values
 Fill `.env` with your real secrets (same ones from local dev):
 `SECRET_KEY` (run `openssl rand -hex 32`), `DB_PASSWORD`, `GEMINI_API_KEY`,
 `DEEPGRAM_API_KEY`, `SMTP_PASS` (Gmail app password). The domain values
-(`CORS_ORIGINS`, `FRONTEND_URL`) are already set for `lenseiq.app`.
+(`CORS_ORIGINS`, `FRONTEND_URL`) are already set for `lenseiq.vip`.
 
 ## 5. Get TLS certificates (one time)
 
@@ -96,7 +96,7 @@ With DNS resolving to the server:
 ```
 
 This stands nginx up with a temporary cert, then swaps in a real Let's Encrypt
-cert for `lenseiq.app` + `www.lenseiq.app`. (To test the flow without hitting
+cert for `lenseiq.vip` + `www.lenseiq.vip`. (To test the flow without hitting
 rate limits, set `staging=1` inside the script first, run it, confirm it works,
 then set it back to `0` and rerun.)
 
@@ -114,7 +114,7 @@ docker compose -f docker-compose.prod.yml ps
 docker compose -f docker-compose.prod.yml logs -f backend
 ```
 
-Then open **https://lenseiq.app** 🎉
+Then open **https://lenseiq.vip** 🎉
 
 ## Updating after a code change
 

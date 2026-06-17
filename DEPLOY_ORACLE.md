@@ -74,7 +74,7 @@ two ACCEPT rules sit **above** the final `REJECT all` rule.)
 
 ## 4. Point the domain at the server (IONOS DNS)
 
-IONOS → **Domains & SSL → lenseiq.app → DNS**, add two A records → your Oracle
+IONOS → **Domains & SSL → lenseiq.vip → DNS**, add two A records → your Oracle
 public IP:
 
 | Type | Host | Value |
@@ -85,7 +85,7 @@ public IP:
 Verify before continuing (Let's Encrypt needs this to resolve):
 
 ```bash
-dig +short lenseiq.app      # should print your Oracle IP
+dig +short lenseiq.vip      # should print your Oracle IP
 ```
 
 ## 5. Install Docker
@@ -120,7 +120,7 @@ nano .env        # fill in the REPLACE_WITH_* values
 
 Fill in your real secrets: `SECRET_KEY` (`openssl rand -hex 32`),
 `DB_PASSWORD`, `GEMINI_API_KEY`, `DEEPGRAM_API_KEY`, `SMTP_PASS`. Domain values
-are already set for `lenseiq.app`.
+are already set for `lenseiq.vip`.
 
 ## 7. Get TLS certificates (one time)
 
@@ -137,7 +137,7 @@ docker compose -f docker-compose.prod.yml up -d --build
 ```
 
 First build takes a while (Go + npm + pip, all on ARM). Then open
-**https://lenseiq.app** 🎉
+**https://lenseiq.vip** 🎉
 
 Check status / logs:
 

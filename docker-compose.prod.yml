@@ -52,7 +52,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     environment:
-      # Empty → the browser uses relative URLs (https://lenseiq.app/api/...),
+      # Empty → the browser uses relative URLs (https://lenseiq.vip/api/...),
       # which nginx routes to the backend. No hardcoded host needed.
       - NEXT_PUBLIC_API_URL=
       - BACKEND_URL=http://backend:8001

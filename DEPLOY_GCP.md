@@ -36,9 +36,10 @@ name → Done.
 
 Click **Create**. When it's running, note the **External IP**.
 
-## 3. Point the domain at the server (IONOS DNS)
+## 3. Point the domain at the server (registrar DNS)
 
-IONOS → **Domains & SSL → lenseiq.app → DNS**, add two A records → your static IP:
+In your domain registrar's DNS settings (wherever you bought `lenseiq.vip`),
+add two A records → your static IP:
 
 | Type | Host | Value |
 | --- | --- | --- |
@@ -48,7 +49,7 @@ IONOS → **Domains & SSL → lenseiq.app → DNS**, add two A records → your 
 Verify before the cert step:
 
 ```bash
-dig +short lenseiq.app      # should print your GCP IP
+dig +short lenseiq.vip      # should print your GCP IP
 ```
 
 ## 4. Connect to the VM
@@ -98,7 +99,7 @@ nano .env        # fill in the REPLACE_WITH_* values
 
 Fill in your real secrets: `SECRET_KEY` (`openssl rand -hex 32`), `DB_PASSWORD`,
 `GEMINI_API_KEY`, `DEEPGRAM_API_KEY`, `SMTP_PASS`. The domain values are already
-set for `lenseiq.app`.
+set for `lenseiq.vip`.
 
 ## 7. Get TLS certificates (one time)
 
@@ -114,7 +115,7 @@ With DNS resolving to the server:
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 
-First build takes several minutes. Then open **https://lenseiq.app** 🎉
+First build takes several minutes. Then open **https://lenseiq.vip** 🎉
 
 ```bash
 docker compose -f docker-compose.prod.yml ps
@@ -130,8 +131,8 @@ docker compose -f docker-compose.prod.yml up -d --build
 
 ## Notes
 
-- **`.app` is HTTPS-only** (HSTS preload) — nginx redirects 80→443; the cert
-  must exist before the domain loads in a browser.
+- **nginx redirects HTTP→HTTPS** automatically; the Let's Encrypt cert must be
+  issued (step 7) before the site loads over HTTPS.
 - **Certs auto-renew** (certbot every 12h, nginx reloads every 6h).
 - **Cost**: free under the $300 trial credit (~$25/mo for e2-medium, so the
   credit lasts the full 90 days). Watch **Billing → Reports**. To avoid any
