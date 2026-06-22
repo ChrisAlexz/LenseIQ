@@ -36,6 +36,11 @@ jobs:
           python -c "from caption.generate_caption import generate_captions; print('generate_captions OK')"
           python -c "from caption.burn_captions import burn_captions; print('burn_captions OK')"
 
+      - name: Run backend unit tests
+        run: |
+          cd backend
+          python -m pytest tests/ -v
+
   frontend:
     runs-on: ubuntu-latest
 
