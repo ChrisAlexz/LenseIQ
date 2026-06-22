@@ -108,27 +108,21 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
-      - name: Deploy to EC2
+      - name: Deploy to GCP VM
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
+          host: ${{ secrets.GCP_HOST }}
+          username: github-actions-deploy
+          key: ${{ secrets.GCP_SSH_KEY }}
           script: |
-            cd autoreel
-            git pull origin main
-
-            echo "Stopping Containers..."
-            docker-compose down
-            
-            echo "Pulling latest images..."
-            docker-compose pull
-
-            echo "Restarting containers..."
-            docker-compose up -d --force-recreate 
-
-            echo "Cleaning unused images..."
-            docker image prune -af
+            sudo bash -c '
+              cd /home/lenseiqsupport/LenseIQ
+              git pull origin main
+              echo "Rebuilding and restarting containers..."
+              docker compose -f docker-compose.prod.yml up -d --build
+              echo "Cleaning unused images..."
+              docker image prune -af
+            '
 
      
 
